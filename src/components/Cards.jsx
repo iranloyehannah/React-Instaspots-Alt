@@ -1,8 +1,8 @@
-import cards from "../cards.json"
-import {Box,Typography,IconButton,Modal} from "@mui/material"
-import FavoriteIcon from "@mui/icons-material/Favorite"
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
-import {useState,forwardRef,useImperativeHandle} from "react"
+import cards from "../cards.json";
+import { Box, Typography, IconButton, Modal } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useState, forwardRef, useImperativeHandle } from "react";
 
 // Import all images
 import image1 from "../assets/images/val-thoren.png";
@@ -12,7 +12,7 @@ import image4 from "../assets/images/long-bridge.png";
 import image5 from "../assets/images/tunnel.png";
 import image6 from "../assets/images/cabin.png";
 
- // Map image paths to imported images
+// Map image paths to imported images
 const imageMap = {
   "assets/images/val-thoren.png": image1,
   "assets/images/restaurant-terrace.png": image2,
@@ -22,17 +22,15 @@ const imageMap = {
   "assets/images/cabin.png": image6,
 };
 
-
-
-const CardDisplay = forwardRef((props,ref) => {
+const CardDisplay = forwardRef((props, ref) => {
   const [isLiked, setIsLiked] = useState({});
   const [isSelectedImg, setIsSelectedImg] = useState(null);
   const [cardImages, setCardImages] = useState(cards);
 
   const handleLike = (index) => {
-    setIsLiked(prev => ({
+    setIsLiked((prev) => ({
       ...prev,
-      [index]: !prev[index]
+      [index]: !prev[index],
     }));
   };
 
@@ -45,161 +43,180 @@ const CardDisplay = forwardRef((props,ref) => {
 
   useImperativeHandle(ref, () => ({
     handleNewPost: (newPost) => {
-      setCardImages(prev => [{
-        image: newPost.image,
-        text: newPost.text
-      }, ...prev]);
-    }
+      setCardImages((prev) => [
+        {
+          image: newPost.image,
+          text: newPost.text,
+        },
+        ...prev,
+      ]);
+    },
   }));
 
   return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
+        },
+        gap: 3,
+        p: 3,
+        backgroundColor: "background.default",
+      }}
+    >
+      {cardImages.map((card, index) => (
+        <Box
+          key={index}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            boxShadow: 1,
+            cursor: "pointer",
+            "&:hover": {
+              boxShadow: 3,
+              transform: "scale(1.02)",
+              transition: "all 0.3s ease-in-out",
+            },
+          }}
+          onClick={() => handleImageClick(card, index)}
+        >
+          <img
+            src={
+              card.image.startsWith("data:") ? card.image : imageMap[card.image]
+            }
+            alt={card.text}
+            title={card.text}
+            style={{
+              width: "100%",
+              height: "300px",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "background.default",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.primary",
+                fontWeight: 500,
+                maxWidth: "80%",
+              }}
+            >
+              {card.text}
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLike(index);
+              }}
+              sx={{
+                color: isLiked[index] ? "error.main" : "text.secondary",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                  transition: "transform 0.2s ease-in-out",
+                },
+              }}
+            >
+              {isLiked[index] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </IconButton>
+          </Box>
+        </Box>
+      ))}
+      {/* Image Preview Modal */}
+      <Modal
+        open={Boolean(isSelectedImg)}
+        onClose={handleCloseModal}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
+      >
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)'
-            },
-            gap: 3,
-            p: 3,
-            backgroundColor: 'background.default', 
+            position: "relative",
+            width: "100%",
+            maxWidth: { xs: "90vw", sm: "70vw", md: "50vw" }, // responsive widths
+            maxHeight: "90vh",
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            overflow: "auto",
+            outline: "none"
           }}
         >
-          {cardImages.map((card, index) => (
-            <Box
-              key={index}
-              sx={{
-                borderRadius: 2,
-                overflow: 'hidden', 
-                boxShadow: 1,
-                cursor: 'pointer',
-                '&:hover': {
-                  boxShadow: 3,
-                  transform: 'scale(1.02)',
-                  transition: 'all 0.3s ease-in-out'
-                }
-              }}
-              onClick={() => handleImageClick(card, index)}
-            >
+          {isSelectedImg && (
+            <>
               <img
-                src={card.image.startsWith('data:') ? card.image : imageMap[card.image]}    
-                alt={card.text}
-                title={card.text}
+                src={
+                  isSelectedImg.image.startsWith("data:")
+                    ? isSelectedImg.image
+                    : imageMap[isSelectedImg.image]
+                }
+                alt={isSelectedImg.text}
                 style={{
-                  width: '100%',
-                  height: '300px',
-                  objectFit: 'cover',
-                  display: 'block'
+                  width: "100%",
+                  height:"auto",
+                  maxHeight: "70vh",
+                  objectFit: "cover",
+                  display: "block"
                 }}
               />
               <Box
                 sx={{
                   p: 2,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  backgroundColor: 'background.default'
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "background.paper",
                 }}
               >
                 <Typography
-                  variant="body1"
+                  variant="h6"
                   sx={{
-                    color: 'text.primary',
+                    color: "text.primary",
                     fontWeight: 500,
-                    maxWidth: '80%' 
                   }}
                 >
-                  {card.text}
+                  {isSelectedImg.text}
                 </Typography>
                 <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLike(index);
-                  }}
+                  onClick={() => handleLike(isSelectedImg.index)}
                   sx={{
-                    color: isLiked[index] ? 'error.main' : 'text.secondary',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      transition: 'transform 0.2s ease-in-out'
-                    }
+                    color: isLiked[isSelectedImg.index]
+                      ? "error.main"
+                      : "text.secondary",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                      transition: "transform 0.2s ease-in-out",
+                    },
                   }}
                 >
-                  {isLiked[index] ? <FavoriteIcon /> : <FavoriteBorderIcon />}   
+                  {isLiked[isSelectedImg.index] ? (
+                    <FavoriteIcon />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )}
                 </IconButton>
               </Box>
-            </Box>
-          ))}
-          {/* Image Preview Modal */}
-          <Modal
-            open={Boolean(isSelectedImg)}
-            onClose={handleCloseModal}
-            sx={{
-              display: 'flex',  
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: 2
-            }}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                maxWidth: '28vw', 
-                maxHeight: '90vh',
-                bgcolor: 'background.paper',
-                borderRadius: 2,
-                boxShadow: 24,
-                overflow: 'hidden'
-              }}
-            >
-              {isSelectedImg && (
-                <>
-                  <img
-                    src={isSelectedImg.image.startsWith('data:') ? isSelectedImg.image : imageMap[isSelectedImg.image]}
-                    alt={isSelectedImg.text}    
-                    style={{
-                      width: '100%',
-                      maxHeight: '80vh',
-                      objectFit: 'contain'
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      p: 2,
-                      display: 'flex',  
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      backgroundColor: 'background.paper'
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: 'text.primary',
-                        fontWeight: 500
-                      }}
-                    >
-                      {isSelectedImg.text}
-                    </Typography>
-                    <IconButton
-                      onClick={() => handleLike(isSelectedImg.index)}
-                      sx={{
-                        color: isLiked[isSelectedImg.index] ? 'error.main' : 'text.secondary',
-                        '&:hover': {
-                          transform: 'scale(1.1)',
-                          transition: 'transform 0.2s ease-in-out'
-                        }
-                      }}
-                    >
-                      {isLiked[isSelectedImg.index] ? <FavoriteIcon /> : <FavoriteBorderIcon />} 
-                    </IconButton>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Modal>
+            </>
+          )}
         </Box>
-      );
+      </Modal>
+    </Box>
+  );
 });
 
 export default CardDisplay;
