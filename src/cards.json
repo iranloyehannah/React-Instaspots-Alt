@@ -1,0 +1,32 @@
+[
+    {
+      "image": "assets/images/val-thoren.png",
+      "text": "Val Thorens",
+      "name": "image of a Val Thorens"
+    },
+    {
+      "image": "assets/images/restaurant-terrace.png",
+      "text": "Restaurant terrace",
+      "name": "image of a Restaurant"
+    },
+    {
+      "image": "assets/images/outdoor-cafe.png",
+      "text": "An outdoor cafe",
+      "name": "love icon"
+    },
+    {
+      "image": "assets/images/long-bridge.png",
+      "text": "A very long bridge, over the forest...",
+      "name": "image of a bridge"
+    },
+    {
+      "image": "assets/images/tunnel.png",
+      "text": "Tunnel with morning light",
+      "name": "image of a Tunnel"
+    },
+    {
+      "image": "assets/images/cabin.png",
+      "text": "Mountain house",
+      "name": "image of a Mountain"
+    }
+  ]
